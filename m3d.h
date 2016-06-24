@@ -54,6 +54,7 @@ t_vec3      *vec3_mul_f(t_vec3 *v, const t_vec3 *v1, float f);
 
 float       vec3_dot(const t_vec3 *v1, const t_vec3 *v2);
 t_vec3      *vec3_cross(t_vec3 *v, const t_vec3 *v1, const t_vec3 *v2);
+float       vec3_squared_length(const t_vec3 *v);
 float       vec3_length(const t_vec3 *v);
 
 t_vec3      *vec3_unit_vector(t_vec3 *v, const t_vec3 *src);

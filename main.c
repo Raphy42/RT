@@ -2,6 +2,7 @@
 // Created by Raphaël Dantzer on 24/06/16.
 //
 
+#include <time.h>
 #include "m3d.h"
 #include "debug.h"
 #include "libft/includes/libft.h"
@@ -24,22 +25,47 @@ float hit_sphere(const t_vec3 *center, float radius, const t_ray *r)
         return ((-b - sqrtf(discriminant)) / (2.0f * a));
 }
 
-t_vec3 rt_color(const t_ray *r)
+t_vec3 random_in_unit_sphere()
 {
+    t_vec3  p;
+    t_vec3  tmp;
+
+    tmp.x = (float)drand48();
+    tmp.y = (float)drand48();
+    tmp.z = (float)drand48();
+    while (vec3_squared_length(&p) >= 1.0)
+    {
+        tmp.x = (float)drand48();
+        tmp.y = (float)drand48();
+        tmp.z = (float)drand48();
+        vec3_sub(&p, vec3_mul_f(&p, &tmp, 2.0), &g_vec3_identity);
+    }
+    return (p);
+}
+
+t_vec3 rt_color(const t_ray *r, t_scene *scene)
+{
+    t_hit_record    record;
+    t_precision     precision;
+    t_vec3 tmp, target, color, random;
+
+    precision.min = 0;
+    precision.max = MAXFLOAT;
+    if (scene_raytrace(scene, r, precision, &record))
+    {
+        random = random_in_unit_sphere();
+        vec3_add(&target, vec3_add(&tmp, &record.normal, &record.pos), &random);
+        t_ray sub_ray;
+
+        ray_assign(&sub_ray, &record.pos, vec3_sub(&tmp, &target, &record.pos));
+        color = rt_color(&sub_ray, scene);
+        vec3_mul_f(&color, &color, 0.5);
+        return (color);
+    }
     t_vec3 uv;
     t_vec3  v;
     const t_vec3 gradient = {0.5f, 0.7f, 1.0f};
     float   t;
-    t_vec3 center = {0.0f, 0.0f, -1.0f};
-
-    t = hit_sphere(&center, 0.5f, r);
-    if (t > 0.0)
-    {
-        t_vec3 tmp;
-        const t_vec3 haha = {0.f, 0.f, -1.f};
-        vec3_mul_f(&tmp, vec3_add_f(&tmp, vec3_unit_vector(&tmp, vec3_sub(&tmp, ray_point_at(&tmp, r, t), &haha)), 1.0f), .5f);
-        return tmp;
-    }
 
     vec3_unit_vector(&uv, &RAY_DIRECTION(r));
     t = 0.5f * (uv.y + 1.0f);
@@ -47,25 +73,25 @@ t_vec3 rt_color(const t_ray *r)
     t_vec3 lerp;
     vec3_mul_f(&lerp, &g_vec3_identity, (1.0f - t));
 
-    t_vec3 color;
+    t_vec3 colorbase;
     vec3_mul_f(&color, &gradient, t);
 
-    vec3_add(&v, &lerp, &color);
+    vec3_add(&v, &lerp, &colorbase);
     return (v);
 }
 
 int main()
 {
     t_window w;
-    t_scene s;
+    t_scene scene;
+    t_vec3 color;
 
-    scene_init(&s, 2);
-    const t_vec3 pos[2] = {{0, 0, -1}, {0, -100.5f, -1.f}};
-    s.entities[0] = entity_create(PRIMITIVE_SPHERE, &pos[0], 0.5);
-    s.entities[0] = entity_create(PRIMITIVE_SPHERE, &pos[1], 100);
+    scene_init(&scene, 2);
+    const t_vec3 pos[] = {{0, 0, -1}, {0, 100.5f, -1.f}};
+    scene.entities[0] = entity_create(PRIMITIVE_SPHERE, &pos[0], 0.5);
+    scene.entities[1] = entity_create(PRIMITIVE_SPHERE, &pos[1], 100);
 
-
-    int nx = WIN_X, ny = WIN_Y;
+    int nx = WIN_X, ny = WIN_Y, ns = 10;
     const t_vec3 lower_left_corner = {-2.0f, -1.0f, -1.0f};
     const t_vec3 horizontal = {4.0f, 0.0f, 0.0f};
     const t_vec3 vertical = {0.0f, 2.0f, 0.0f};
@@ -73,30 +99,36 @@ int main()
 
     t_ray r;
     init(&w);
-    for (int j = 0; j < ny; j++) {
+    for (int j = ny - 1; j >= 0; j--) {
         for (int i = 0; i < nx; i++) {
-            float u = (float)i / (float)nx;
-            float v = (float)j / (float)ny;
+            ft_bzero(&color, sizeof(t_vec3));
+            for (int s = 0; s < ns; s++) {
+                float u = ((float)i + (float)drand48()) / (float)nx;
+                float v = ((float)j + (float)drand48()) / (float)ny;
 
-            t_vec3 v_pos;
-            vec3_mul_f(&v_pos, &vertical, v);
+                t_vec3 v_pos;
+                vec3_mul_f(&v_pos, &vertical, v);
 
-            t_vec3 u_pos;
-            vec3_mul_f(&u_pos, &horizontal, u);
+                t_vec3 u_pos;
+                vec3_mul_f(&u_pos, &horizontal, u);
 
-            t_vec3 b;
-            vec3_add(&b, &v_pos, &u_pos);
+                t_vec3 b;
+                vec3_add(&b, &v_pos, &u_pos);
 
-            t_vec3 tmp;
-            ray_assign(&r, &origin, vec3_add(&tmp, &lower_left_corner, &b));
+                t_vec3 tmp;
+                ray_assign(&r, &origin, vec3_add(&tmp, &lower_left_corner, &b));
 
-            t_vec3 color = rt_color(&r);
+                t_vec3 color_tmp = rt_color(&r, &scene);
+                vec3_add(&color, &color, &color_tmp);
+            }
+            vec3_div_f(&color, &color, (float)ns);
             t_rgb pixel;
             pixel.r = (int)(255.99 * color.x);
             pixel.g = (int)(255.99 * color.y);
             pixel.b = (int)(255.99 * color.z);
             draw_pixel(i, j, pixel, &w.canvas);
         }
+        ft_putnbr(j); ft_putendl("<");
     }
     while (1)
     {

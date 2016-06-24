@@ -3,7 +3,7 @@
 //
 
 #include "rt.h"
-
+#include "libft/includes/libft.h"
 
 
 t_bool      sphere_hit(t_entity *entity, const t_ray *r, t_precision precision, t_hit_record *hit)
