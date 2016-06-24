@@ -16,7 +16,7 @@ t_vec3      *vec3_clear(t_vec3 *v) {
     return (v);
 }
 
-t_vec3      *vec3_assign(t_vec3 *v, t_vec3 *src)
+t_vec3      *vec3_assign(t_vec3 *v, const t_vec3 *src)
 {
     ft_memcpy(v, src, sizeof(t_vec3));
     return (v);
@@ -80,9 +80,9 @@ t_vec3      *vec3_div_f(t_vec3 *v, const t_vec3 *v1, float f)
 
 t_vec3      *vec3_mul_f(t_vec3 *v, const t_vec3 *v1, float f)
 {
-    v->x = v1->x - f;
-    v->y = v1->y - f;
-    v->z = v1->z - f;
+    v->x = v1->x * f;
+    v->y = v1->y * f;
+    v->z = v1->z * f;
     return (v);
 }
 
