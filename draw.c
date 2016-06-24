@@ -7,7 +7,7 @@
 
 void        draw_pixel(int x, int y, t_rgb color, t_canvas *canvas)
 {
-    canvas->image_pointer[WIN_X * y + x] = (Uint32)((((color.r << 16) + color.g) << 8) + color.b);
+    canvas->image_pointer[WIN_X * y + x] = (Uint32 )((color.r << 16) + (color.g << 8) + color.b);
 }
 
 void        render(t_window *w)

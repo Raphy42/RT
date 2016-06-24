@@ -17,15 +17,19 @@ t_bool       scene_raytrace(t_scene *scene, const t_ray *r, t_precision p, t_hit
 {
     t_bool          collision;
     int             i;
+    t_precision     tmp;
+    t_hit_record    tmp_record;
 
+    ft_bzero(&tmp_record, sizeof(t_hit_record));
+    ft_memcpy(&tmp, &p, sizeof(t_precision));
     collision = FALSE;
     i = -1;
     while (++i < scene->entity_count)
     {
-        if (scene->entities[i]->hit(scene->entities[i], r, p, h))
+        if (scene->entities[i]->hit(scene->entities[i], r, tmp, h))
         {
             collision = TRUE;
-            p.max = h->t;
+            tmp.max = h->t;
         }
     }
     return (collision);

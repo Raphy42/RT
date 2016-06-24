@@ -10,21 +10,6 @@
 #include "safe_alloc.h"
 #include "scene.h"
 
-float hit_sphere(const t_vec3 *center, float radius, const t_ray *r)
-{
-    t_vec3      oc;
-
-    vec3_sub(&oc, &RAY_ORIGIN(r), center);
-    float a = vec3_dot(&RAY_DIRECTION(r), &RAY_DIRECTION(r));
-    float b = 2.0f * vec3_dot(&oc, &RAY_DIRECTION(r));
-    float c = vec3_dot(&oc, &oc) - SQR(radius);
-    float discriminant = b * b - 4 * a * c;
-    if (discriminant < 0)
-        return (-1.0f);
-    else
-        return ((-b - sqrtf(discriminant)) / (2.0f * a));
-}
-
 t_vec3 random_in_unit_sphere()
 {
     t_vec3  p;
@@ -49,7 +34,7 @@ t_vec3 rt_color(const t_ray *r, t_scene *scene)
     t_precision     precision;
     t_vec3 tmp, target, color, random;
 
-    precision.min = 0;
+    precision.min = 0.001;
     precision.max = MAXFLOAT;
     if (scene_raytrace(scene, r, precision, &record))
     {
@@ -62,22 +47,24 @@ t_vec3 rt_color(const t_ray *r, t_scene *scene)
         vec3_mul_f(&color, &color, 0.5);
         return (color);
     }
-    t_vec3 uv;
-    t_vec3  v;
-    const t_vec3 gradient = {0.5f, 0.7f, 1.0f};
-    float   t;
+    else {
+        t_vec3 uv;
+        t_vec3  v;
+        const t_vec3 gradient = {0.5f, 0.7f, 1.0f};
+        float   t;
 
-    vec3_unit_vector(&uv, &RAY_DIRECTION(r));
-    t = 0.5f * (uv.y + 1.0f);
-   // fprintf(stderr, "%f\n", t);
-    t_vec3 lerp;
-    vec3_mul_f(&lerp, &g_vec3_identity, (1.0f - t));
+        vec3_unit_vector(&uv, &RAY_DIRECTION(r));
+        t = 0.5f * (uv.y + 1.0f);
+        // fprintf(stderr, "%f\n", t);
+        t_vec3 lerp;
+        vec3_mul_f(&lerp, &g_vec3_identity, (1.0f - t));
 
-    t_vec3 colorbase;
-    vec3_mul_f(&color, &gradient, t);
+        t_vec3 colorbase;
+        vec3_mul_f(&color, &gradient, t);
 
-    vec3_add(&v, &lerp, &colorbase);
-    return (v);
+        vec3_add(&v, &lerp, &colorbase);
+        return (v);
+    }
 }
 
 int main()
@@ -87,11 +74,11 @@ int main()
     t_vec3 color;
 
     scene_init(&scene, 2);
-    const t_vec3 pos[] = {{0, 0, -1}, {0, 100.5f, -1.f}};
+    const t_vec3 pos[] = {{0, 0, -1}, {0, 100.5f, -1.f}, {0, -1, -1}};
     scene.entities[0] = entity_create(PRIMITIVE_SPHERE, &pos[0], 0.5);
     scene.entities[1] = entity_create(PRIMITIVE_SPHERE, &pos[1], 100);
 
-    int nx = WIN_X, ny = WIN_Y, ns = 10;
+    int nx = WIN_X, ny = WIN_Y, ns = 100;
     const t_vec3 lower_left_corner = {-2.0f, -1.0f, -1.0f};
     const t_vec3 horizontal = {4.0f, 0.0f, 0.0f};
     const t_vec3 vertical = {0.0f, 2.0f, 0.0f};
@@ -128,7 +115,7 @@ int main()
             pixel.b = (int)(255.99 * color.z);
             draw_pixel(i, j, pixel, &w.canvas);
         }
-        ft_putnbr(j); ft_putendl("<");
+        ft_putnbr(j); ft_putchar('\n');
     }
     while (1)
     {
