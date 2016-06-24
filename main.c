@@ -6,6 +6,8 @@
 #include "debug.h"
 #include "libft/includes/libft.h"
 #include "rt.h"
+#include "safe_alloc.h"
+#include "scene.h"
 
 float hit_sphere(const t_vec3 *center, float radius, const t_ray *r)
 {
@@ -55,6 +57,14 @@ t_vec3 rt_color(const t_ray *r)
 int main()
 {
     t_window w;
+    t_scene s;
+
+    scene_init(&s, 2);
+    const t_vec3 pos[2] = {{0, 0, -1}, {0, -100.5f, -1.f}};
+    s.entities[0] = entity_create(PRIMITIVE_SPHERE, &pos[0], 0.5);
+    s.entities[0] = entity_create(PRIMITIVE_SPHERE, &pos[1], 100);
+
+
     int nx = WIN_X, ny = WIN_Y;
     const t_vec3 lower_left_corner = {-2.0f, -1.0f, -1.0f};
     const t_vec3 horizontal = {4.0f, 0.0f, 0.0f};
