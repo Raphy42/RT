@@ -32,9 +32,9 @@ typedef struct s_ray {
 
 typedef struct s_rgb
 {
-    uint8_t r;
-    uint8_t g;
-    uint8_t b;
+    int r;
+    int g;
+    int b;
 } t_rgb;
 
 /**

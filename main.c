@@ -64,6 +64,20 @@ t_vec3 rt_color(const t_ray *r, t_scene *scene)
     }
 }
 
+t_vec3     test_render(const t_ray *r)
+{
+    t_vec3  u;
+    float   t;
+    t_vec3  lerp;
+    t_vec3  tmp;
+    const t_vec3 gradient = {.5f, .7f, 1.f};
+
+    vec3_unit_vector(&u, &RAY_DIRECTION(r));
+    t = 0.5f * (u.y  + 1.0f);
+    vec3_add(&tmp, vec3_mul_f(&tmp, &g_vec3_identity, 1.0f - t), vec3_mul_f(&lerp, &gradient, t));
+    return tmp;
+}
+
 int main()
 {
     t_window w;
@@ -75,7 +89,7 @@ int main()
     scene.entities[0] = entity_create(PRIMITIVE_SPHERE, &pos[0], 0.5);
     scene.entities[1] = entity_create(PRIMITIVE_SPHERE, &pos[1], 100);
 
-    int nx = WIN_X, ny = WIN_Y, ns = WIN_NS;
+    int nx = WIN_X, ny = WIN_Y;//, ns = WIN_NS;
     const t_vec3 lower_left_corner = {-2.0f, -1.0f, -1.0f};
     const t_vec3 horizontal = {4.0f, 0.0f, 0.0f};
     const t_vec3 vertical = {0.0f, 2.0f, 0.0f};
@@ -88,9 +102,9 @@ int main()
     for (int j = ny - 1; j >= 0; j--) {
         for (int i = 0; i < nx; i++) {
             ft_bzero(&color, sizeof(t_vec3));
-            for (int s = 0; s < ns; s++) {
-                float u = ((float)i + (float)drand48()) / (float)nx;
-                float v = ((float)j + (float)drand48()) / (float)ny;
+//            for (int s = 0; s < ns; s++) {
+                float u = (float)i / (float)nx;
+                float v = (float)j  / (float)ny;
 
                 t_vec3 v_pos;
                 vec3_mul_f(&v_pos, &vertical, v);
@@ -104,14 +118,15 @@ int main()
                 t_vec3 tmp;
                 ray_assign(&r, &origin, vec3_add(&tmp, &lower_left_corner, &b));
 
-                t_vec3 color_tmp = rt_color(&r, &scene);
-                vec3_add(&color, &color, &color_tmp);
-            }
-            vec3_div_f(&color, &color, (float)ns);
+//                t_vec3 color_tmp = rt_color(&r, &scene);
+//                vec3_add(&color, &color, &color_tmp);
+                color = test_render(&r);
+  //          }
+//            vec3_div_f(&color, &color, (float)ns);
             t_rgb pixel;
-            pixel.r = (uint8_t)(255.99 * color.x);
-            pixel.g = (uint8_t)(255.99 * color.y);
-            pixel.b = (uint8_t)(255.99 * color.z);
+            pixel.r = (int)(255.99 * color.x);
+            pixel.g = (int)(255.99 * color.y);
+            pixel.b = (int)(255.99 * color.z);
             draw_pixel(i, j, pixel, &w.canvas);
         }
     }
