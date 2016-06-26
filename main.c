@@ -43,9 +43,7 @@ t_vec3 rt_color(const t_ray *r, t_scene *scene)
         t_ray sub_ray;
 
         ray_assign(&sub_ray, &record.pos, vec3_sub(&tmp, &target, &record.pos));
-        color = rt_color(&sub_ray, scene);
-        vec3_mul_f(&color, &color, 0.5);
-        return (color);
+        return (rt_color(&sub_ray, scene));
     }
     else {
         t_vec3 uv;
@@ -55,7 +53,6 @@ t_vec3 rt_color(const t_ray *r, t_scene *scene)
 
         vec3_unit_vector(&uv, &RAY_DIRECTION(r));
         t = 0.5f * (uv.y + 1.0f);
-        // fprintf(stderr, "%f\n", t);
         t_vec3 lerp;
         vec3_mul_f(&lerp, &g_vec3_identity, (1.0f - t));
 
@@ -78,7 +75,7 @@ int main()
     scene.entities[0] = entity_create(PRIMITIVE_SPHERE, &pos[0], 0.5);
     scene.entities[1] = entity_create(PRIMITIVE_SPHERE, &pos[1], 100);
 
-    int nx = WIN_X, ny = WIN_Y, ns = 100;
+    int nx = WIN_X, ny = WIN_Y, ns = WIN_NS;
     const t_vec3 lower_left_corner = {-2.0f, -1.0f, -1.0f};
     const t_vec3 horizontal = {4.0f, 0.0f, 0.0f};
     const t_vec3 vertical = {0.0f, 2.0f, 0.0f};
@@ -86,6 +83,8 @@ int main()
 
     t_ray r;
     init(&w);
+    //PPM HEADER
+    //printf("P3\n%d %d\n255\n", nx, ny);
     for (int j = ny - 1; j >= 0; j--) {
         for (int i = 0; i < nx; i++) {
             ft_bzero(&color, sizeof(t_vec3));
@@ -110,12 +109,11 @@ int main()
             }
             vec3_div_f(&color, &color, (float)ns);
             t_rgb pixel;
-            pixel.r = (int)(255.99 * color.x);
-            pixel.g = (int)(255.99 * color.y);
-            pixel.b = (int)(255.99 * color.z);
+            pixel.r = (uint8_t)(255.99 * color.x);
+            pixel.g = (uint8_t)(255.99 * color.y);
+            pixel.b = (uint8_t)(255.99 * color.z);
             draw_pixel(i, j, pixel, &w.canvas);
         }
-        ft_putnbr(j); ft_putchar('\n');
     }
     while (1)
     {

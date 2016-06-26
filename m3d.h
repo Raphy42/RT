@@ -6,6 +6,7 @@
 #define RAYTRACER_3D_MATH_H
 
 #include <math.h>
+#include <stdint.h>
 
 #define SQR(x) (x * x)
 
@@ -31,9 +32,9 @@ typedef struct s_ray {
 
 typedef struct s_rgb
 {
-    int r;
-    int g;
-    int b;
+    uint8_t r;
+    uint8_t g;
+    uint8_t b;
 } t_rgb;
 
 /**

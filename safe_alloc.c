@@ -6,13 +6,6 @@
 #include "safe_alloc.h"
 #include "libft/includes/libft.h"
 
-static t_allocation_table           **allocation_table(void)
-{
-    static t_allocation_table       *table;
-
-    return (&table);
-}
-
 void    *safe_alloc(size_t length)
 {
     void *tmp;
@@ -25,19 +18,4 @@ void    *safe_alloc(size_t length)
     }
     else
         return (tmp);
-}
-
-void    safe_alloc_free_registered(void)
-{
-    t_allocation_table  *t;
-    t_allocation_table  *t1;
-
-    t = (*allocation_table());
-    while (t->next)
-    {
-        free(t->address);
-        t1 = t;
-        t = t->next;
-        free(t);
-    }
 }

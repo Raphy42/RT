@@ -10,6 +10,7 @@
 
 #define WIN_X 1200
 #define WIN_Y 600
+#define WIN_NS 100
 
 #ifndef TRUE
 # define TRUE 1
@@ -17,6 +18,10 @@
 
 #ifndef FALSE
 # define FALSE 0
+#endif
+
+#ifndef MAXFLOAT
+# define MAXFLOAT    0x1.fffffep+127f
 #endif
 
 typedef int         t_bool;
