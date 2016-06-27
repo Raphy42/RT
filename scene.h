@@ -10,7 +10,8 @@
 /**
  * ENTITY.c
  */
-t_entity        *entity_create(t_entity_type type, const t_vec3 *pos, float radius);
+t_entity        *entity_create(t_entity_type type, t_material *material, const t_vec3 *pos, float radius);
+t_material      *material_create(t_material_type type, t_vec3 *albedo);
 
 /**
  * SCENE.c

@@ -60,6 +60,8 @@ float       vec3_length(const t_vec3 *v);
 
 t_vec3      *vec3_unit_vector(t_vec3 *v, const t_vec3 *src);
 
+t_vec3      *vec3_reflect(t_vec3 *v, const t_vec3 *v1, const t_vec3 *v2);
+
 /**
  * RAY.c
  */

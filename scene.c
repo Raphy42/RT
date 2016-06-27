@@ -28,6 +28,7 @@ t_bool       scene_raytrace(t_scene *scene, const t_ray *r, t_precision p, t_hit
     {
         if (scene->entities[i]->hit(scene->entities[i], r, tmp, h))
         {
+            h->material = scene->entities[i]->material;
             collision = TRUE;
             tmp.max = h->t;
         }

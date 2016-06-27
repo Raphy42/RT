@@ -8,8 +8,8 @@
 #include <SDL.h>
 #include "m3d.h"
 
-#define WIN_X 1200
-#define WIN_Y 600
+#define WIN_X 800
+#define WIN_Y 400
 #define WIN_NS 100
 
 #ifndef TRUE
@@ -47,16 +47,6 @@ typedef struct      s_window
 }                   t_window;
 
 /**
- * Raytracer hit record
- */
-typedef struct      s_hit_record
-{
-    float           t;
-    t_vec3          pos;
-    t_vec3          normal;
-}                   t_hit_record;
-
-/**
  * Precision for hit function
  */
 typedef struct      s_precision
@@ -64,6 +54,37 @@ typedef struct      s_precision
     float           min;
     float           max;
 }                   t_precision;
+
+typedef enum        e_material_type
+{
+    MATERIAL_DEBUG = 0,
+    MATERIAL_LAMBERTIAN,
+    MATERIAL_METAL,
+    MATERIAL_DIELECTRIC
+}                   t_material_type;
+
+
+typedef struct s_material t_material;
+/**
+ * Raytracer hit record
+ */
+typedef struct      s_hit_record
+{
+    float           t;
+    t_vec3          pos;
+    t_vec3          normal;
+    t_material      *material;
+}                   t_hit_record;
+
+/**
+ * Material struct
+ */
+typedef struct      s_material
+{
+    t_material_type type;
+    t_vec3          albedo;
+    t_bool          (*scatter)(struct s_material *, const t_ray *, const t_hit_record *, t_vec3 *, t_ray *);
+}                   t_material;
 
 /**
  * Entity type
@@ -82,7 +103,23 @@ typedef struct      s_entity
     t_vec3          center;
     float           radius;
     t_bool          (*hit)(struct s_entity *, const t_ray *, t_precision, t_hit_record *);
+    t_material      *material;
 }                   t_entity;
+
+/**
+ * Camera structure
+ */
+typedef struct      s_camera
+{
+    t_vec3          eye;
+    t_vec3          center;
+    t_vec3          p_up;
+    float           fov;
+    float           aspect;
+    t_vec3          lower_left_corner;
+    t_vec3          horizontal;
+    t_vec3          vertical;
+}                   t_camera;
 
 typedef struct      s_scene
 {
@@ -109,5 +146,17 @@ void        handle_events(SDL_Event event);
  * RAYTRACE.c
  */
 t_bool      sphere_hit(t_entity *entity, const t_ray *r, t_precision precision, t_hit_record *hit);
+
+/**
+ * CAMERA.c
+ */
+void        camera_init(t_camera *camera);
+t_ray       camera_get_ray(t_camera *camera, float u, float v);
+
+/**
+ * MATERIALS.c
+ */
+t_bool           lambertian(t_material *material, const t_ray *r, const t_hit_record *h, t_vec3 *attenuation, t_ray *scattered);
+t_bool           metal(t_material *material, const t_ray *r, const t_hit_record *h, t_vec3 *attenuation, t_ray *scattered);
 
 #endif //RAYTRACER_RT_H
