@@ -57,18 +57,19 @@ int main() {
     t_camera camera;
 
     scene_init(&scene, 4);
-    const t_vec3 pos[] = {{0, 0,       -1},
+    const t_vec3 pos[] = {{0, 0,       -2},
                           {0, -100.5f, -1.f},
-                          {1, 0, -1},
-                          {-1, 0, -1}};
+                          {0.5, 0, -1},
+                          {-0.5f, 0, -1},
+                          {-1, -1, -1}};
     t_vec3 albedo[] = {{.8f, .3f, .3f},
-                       {.8f, .8f, .0f},
+                       {.4f, .4f, .4f},
                        {.8f, .6f, .2f},
-                       {.8f, .8f, .8f}};
+                       {1.f, 1.f, 1.f}};
     scene.entities[0] = entity_create(PRIMITIVE_SPHERE, material_create(MATERIAL_LAMBERTIAN, &albedo[0]), &pos[0], 0.5);
     scene.entities[1] = entity_create(PRIMITIVE_SPHERE, material_create(MATERIAL_LAMBERTIAN, &albedo[1]), &pos[1], 100);
     scene.entities[2] = entity_create(PRIMITIVE_SPHERE, material_create(MATERIAL_METAL, &albedo[2]), &pos[2], 0.5);
-    scene.entities[3] = entity_create(PRIMITIVE_SPHERE, material_create(MATERIAL_METAL, &albedo[3]), &pos[3], 0.5);
+    scene.entities[3] = entity_create(PRIMITIVE_SPHERE, material_create(MATERIAL_DIELECTRIC, &albedo[3]), &pos[3], 0.5f);
 
     int nx = WIN_X;
     int ny = WIN_Y;
@@ -77,12 +78,13 @@ int main() {
     const t_vec3 horizontal = {4.0f, 0.0f, 0.0f};
     const t_vec3 vertical = {0.0f, 2.0f, 0.0f};
     const t_vec3 origin = {0.0f, 0.f, 0.0f};
-    const t_vec3 p_up = {0.f, -1.f, 0.f};
+    const t_vec3 p_up = {0.f, 1.f, 0.f};
     const t_vec3 eye = {-2.f, 2.f, 1.f};
+    const t_vec3 center = {0.f, 0.f, -1.f};
 
     vec3_assign(&camera.eye, &eye);
     vec3_assign(&camera.p_up, &p_up);
-    vec3_assign(&camera.center, &origin);
+    vec3_assign(&camera.center, &center);
     camera.fov = 90;
     camera.aspect = (float) nx / (float) ny;
 
@@ -108,7 +110,7 @@ int main() {
 
                 t_vec3 tmp;
                 ray_assign(&r, &origin, vec3_add(&tmp, &lower_left_corner, &b));
-//            r = camera_get_ray(&camera, u, v);
+               // r = camera_get_ray(&camera, u, v);
 
                 t_vec3 tmp_color = rt_color(&r, &scene, 0);
                 vec3_add(&color, &color, &tmp_color);
@@ -120,6 +122,7 @@ int main() {
             pixel.b = (int) (255.99 * color.z);
             draw_pixel(WIN_X - i, WIN_Y - j, pixel, &w.canvas);
         }
+        ft_putnbr(j); ft_putchar('\n');
     }
     while (1) {
         while (SDL_PollEvent(&w.event))

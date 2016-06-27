@@ -3,6 +3,7 @@
 //
 
 #include "rt.h"
+#include "debug.h"
 
 void        camera_init(t_camera *camera)
 {
@@ -19,11 +20,14 @@ void        camera_init(t_camera *camera)
     vec3_unit_vector(&w, vec3_sub(&tmp, &camera->eye, &camera->center));
     vec3_unit_vector(&u, vec3_cross(&tmp, &camera->p_up, &w));
     vec3_cross(&v, &w, &u);
-    camera->lower_left_corner.x = -half_width;
-    camera->lower_left_corner.y = -half_width;
-    camera->lower_left_corner.z = 1.0f;
-    vec3_mul_f(&camera->horizontal, &u, 2 * half_width);
-    vec3_mul_f(&camera->vertical, &v, 2 * half_height);
+
+    vec3_mul_f(&u, &u, half_width);
+    vec3_mul_f(&v, &v, half_height);
+    vec3_sub(&camera->lower_left_corner, &u, &v);
+    vec3_sub(&camera->lower_left_corner, &camera->lower_left_corner, &w);
+    vec3_mul_f(&camera->horizontal, &u, 2);
+    vec3_mul_f(&camera->vertical, &v, 2);
+    vec3_pretty_print(&camera->horizontal);
 }
 
 t_ray       camera_get_ray(t_camera *camera, float u, float v)

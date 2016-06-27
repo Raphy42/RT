@@ -38,6 +38,7 @@ $(NAME):
 	@printf "$(RED)[$(NAME)] Compiling sources...$(RESET)\t\t"
 	@$(CC) $(CFLAGS) -c -I ./inc -I ./libft/includes $(SDL_2_CFLAGS) $(SRC)
 	@$(CC) $(CFLAGS) $(OBJ) -L./libft -lft $(SDL_2_LIBS) -o $(NAME)
+	@$(RM) $(OBJ)
 	@printf "$(GREEN)Done$(RESET)\n"
 
 clean:

@@ -8,9 +8,9 @@
 #include <SDL.h>
 #include "m3d.h"
 
-#define WIN_X 800
-#define WIN_Y 400
-#define WIN_NS 100
+#define WIN_X 400
+#define WIN_Y 200
+#define WIN_NS 1000
 
 #ifndef TRUE
 # define TRUE 1
@@ -156,7 +156,8 @@ t_ray       camera_get_ray(t_camera *camera, float u, float v);
 /**
  * MATERIALS.c
  */
-t_bool           lambertian(t_material *material, const t_ray *r, const t_hit_record *h, t_vec3 *attenuation, t_ray *scattered);
-t_bool           metal(t_material *material, const t_ray *r, const t_hit_record *h, t_vec3 *attenuation, t_ray *scattered);
+t_bool      lambertian(t_material *material, const t_ray *r, const t_hit_record *h, t_vec3 *attenuation, t_ray *scattered);
+t_bool      metal(t_material *material, const t_ray *r, const t_hit_record *h, t_vec3 *attenuation, t_ray *scattered);
+t_bool      dielectric(t_material *material, const t_ray *r, const t_hit_record *h, t_vec3 *attenuation, t_ray *scattered);
 
 #endif //RAYTRACER_RT_H

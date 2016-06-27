@@ -29,5 +29,7 @@ t_material      *material_create(t_material_type type, t_vec3 *albedo)
         material->scatter = &lambertian;
     else if (material->type == MATERIAL_METAL)
         material->scatter = &metal;
+    else if (material->type == MATERIAL_DIELECTRIC)
+        material->scatter = &dielectric;
     return (material);
 }
