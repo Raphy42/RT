@@ -5,6 +5,15 @@
 #include "rt.h"
 #include "libft/includes/libft.h"
 
+static void get_sphere_uv(const t_vec3 *p, float *u, float *v)
+{
+    const float phi = atan2f(p->z, p->x);
+    const float theta = asinf(p->y);
+
+    *u = 1 - (phi + (float)M_PI) / (2 * (float)M_PI);
+    *v = (theta + (float)M_PI / 2) / (float)M_PI;
+}
+
 
 t_bool      sphere_hit(t_entity *entity, const t_ray *r, t_precision precision, t_hit_record *hit)
 {
@@ -27,7 +36,8 @@ t_bool      sphere_hit(t_entity *entity, const t_ray *r, t_precision precision, 
         {
             hit->t = tmp;
             ray_point_at(&hit->pos, r, hit->t);
-            vec3_div_f(&hit->normal, vec3_sub(&hit->normal, &hit->pos, &entity->center), entity->radius);
+            vec3_sub(&hit->normal, &hit->pos, &entity->center);
+            vec3_div_f(&hit->normal, &hit->normal, entity->radius);
             return (TRUE);
         }
         tmp = (-b + sqrtf(SQR(b) - a * c)) / a;
@@ -35,9 +45,11 @@ t_bool      sphere_hit(t_entity *entity, const t_ray *r, t_precision precision, 
         {
             hit->t = tmp;
             ray_point_at(&hit->pos, r, hit->t);
-            vec3_div_f(&hit->normal, vec3_sub(&hit->normal, &hit->pos, &entity->center), entity->radius);
+            vec3_sub(&hit->normal, &hit->pos, &entity->center);
+            vec3_div_f(&hit->normal, &hit->normal, entity->radius);
             return (TRUE);
         }
     }
     return (FALSE);
 }
+

@@ -24,12 +24,17 @@ t_material      *material_create(t_material_type type, t_vec3 *albedo)
 
     material = (t_material *)ft_memalloc(sizeof(t_material));
     material->type = type;
-    vec3_assign(&material->albedo, albedo);
+    vec3_assign(&material->texture.albedo, albedo);
     if (material->type == MATERIAL_LAMBERTIAN)
         material->scatter = &lambertian;
     else if (material->type == MATERIAL_METAL)
         material->scatter = &metal;
     else if (material->type == MATERIAL_DIELECTRIC)
         material->scatter = &dielectric;
+    else if (material->type == MATERIAL_DEBUG)
+    {
+        material->scatter = &debug_test;
+        material->texture.value = &rainbow;
+    }
     return (material);
 }

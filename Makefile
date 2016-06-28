@@ -21,7 +21,7 @@ OBJ= $(SRC:.c=.o)
 CC= gcc
 RM= rm -rf
 
-CFLAGS= -Wall -Werror -Wextra -O2
+CFLAGS= -Wall -Werror -Wextra -O2 -Wno-unused-variable
 
 SDL_2_CFLAGS= $(shell sdl2-config --cflags)
 SDL_2_LIBS= $(shell sdl2-config --libs)

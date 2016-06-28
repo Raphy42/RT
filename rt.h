@@ -1,16 +1,18 @@
 //
 // Created by Raphaël Dantzer on 24/06/16.
 //
-
 #ifndef RAYTRACER_RT_H
 #define RAYTRACER_RT_H
 
 #include <SDL.h>
 #include "m3d.h"
+#include "pipeline.h"
 
-#define WIN_X 400
-#define WIN_Y 200
-#define WIN_NS 1000
+#define WIN_X       1600
+#define WIN_Y       800
+#define WIN_NS      10
+#define RT_THREADS  8
+#define RT_ROWS     8
 
 #ifndef TRUE
 # define TRUE 1
@@ -47,66 +49,6 @@ typedef struct      s_window
 }                   t_window;
 
 /**
- * Precision for hit function
- */
-typedef struct      s_precision
-{
-    float           min;
-    float           max;
-}                   t_precision;
-
-typedef enum        e_material_type
-{
-    MATERIAL_DEBUG = 0,
-    MATERIAL_LAMBERTIAN,
-    MATERIAL_METAL,
-    MATERIAL_DIELECTRIC
-}                   t_material_type;
-
-
-typedef struct s_material t_material;
-/**
- * Raytracer hit record
- */
-typedef struct      s_hit_record
-{
-    float           t;
-    t_vec3          pos;
-    t_vec3          normal;
-    t_material      *material;
-}                   t_hit_record;
-
-/**
- * Material struct
- */
-typedef struct      s_material
-{
-    t_material_type type;
-    t_vec3          albedo;
-    t_bool          (*scatter)(struct s_material *, const t_ray *, const t_hit_record *, t_vec3 *, t_ray *);
-}                   t_material;
-
-/**
- * Entity type
- */
-typedef enum        e_entity_type
-{
-    PRIMITIVE_SPHERE = 0,
-}                   t_entity_type;
-
-/**
- * Entity structure with pseudo method hit
- */
-typedef struct      s_entity
-{
-    t_entity_type   type;
-    t_vec3          center;
-    float           radius;
-    t_bool          (*hit)(struct s_entity *, const t_ray *, t_precision, t_hit_record *);
-    t_material      *material;
-}                   t_entity;
-
-/**
  * Camera structure
  */
 typedef struct      s_camera
@@ -125,6 +67,7 @@ typedef struct      s_scene
 {
     t_entity        **entities;
     int             entity_count;
+    t_camera        *camera;
 }                   t_scene;
 /**
  * INIT.c
@@ -150,8 +93,8 @@ t_bool      sphere_hit(t_entity *entity, const t_ray *r, t_precision precision, 
 /**
  * CAMERA.c
  */
-void        camera_init(t_camera *camera);
-t_ray       camera_get_ray(t_camera *camera, float u, float v);
+t_camera    *camera_init();
+void        camera_get_ray(t_ray *ray, t_camera *camera, float u, float v);
 
 /**
  * MATERIALS.c
@@ -159,5 +102,11 @@ t_ray       camera_get_ray(t_camera *camera, float u, float v);
 t_bool      lambertian(t_material *material, const t_ray *r, const t_hit_record *h, t_vec3 *attenuation, t_ray *scattered);
 t_bool      metal(t_material *material, const t_ray *r, const t_hit_record *h, t_vec3 *attenuation, t_ray *scattered);
 t_bool      dielectric(t_material *material, const t_ray *r, const t_hit_record *h, t_vec3 *attenuation, t_ray *scattered);
+t_bool      debug_test(t_material *material, const t_ray *r, const t_hit_record *h, t_vec3 *attenuation, t_ray *scattered);
+
+/**
+ * THREAD.c
+ */
+void    threaded_render(t_scene *scene, t_window *w, int width, int height);
 
 #endif //RAYTRACER_RT_H
