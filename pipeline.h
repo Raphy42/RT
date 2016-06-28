@@ -52,6 +52,8 @@ typedef struct      s_hit_record
     t_vec3          pos;
     t_vec3          normal;
     t_material      *material;
+    float           u;
+    float           v;
 }                   t_hit_record;
 
 /**
@@ -70,6 +72,8 @@ typedef struct      s_material
 typedef enum        e_entity_type
 {
     PRIMITIVE_SPHERE = 0,
+    PRIMITIVE_PLANE,
+    PRIMITIVE_TRIANGLE,
 }                   t_entity_type;
 
 /**
@@ -82,6 +86,7 @@ typedef struct      s_entity
     float           radius;
     int             (*hit)(struct s_entity *, const t_ray *, t_precision, t_hit_record *);
     t_material      *material;
+    void            *data;
 }                   t_entity;
 
 /**

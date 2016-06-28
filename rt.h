@@ -8,9 +8,9 @@
 #include "m3d.h"
 #include "pipeline.h"
 
-#define WIN_X       1600
-#define WIN_Y       800
-#define WIN_NS      10
+#define WIN_X       800
+#define WIN_Y       400
+#define WIN_NS      100
 #define RT_THREADS  8
 #define RT_ROWS     8
 
@@ -89,6 +89,7 @@ void        handle_events(SDL_Event event);
  * RAYTRACE.c
  */
 t_bool      sphere_hit(t_entity *entity, const t_ray *r, t_precision precision, t_hit_record *hit);
+t_bool      triangle_hit(t_entity *entity, const t_ray *r, t_precision precision, t_hit_record *hit);
 
 /**
  * CAMERA.c
