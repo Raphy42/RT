@@ -8,8 +8,8 @@
 #include "m3d.h"
 #include "pipeline.h"
 
-#define WIN_X       800
-#define WIN_Y       400
+#define WIN_X       1800
+#define WIN_Y       900
 #define WIN_NS      100
 #define RT_THREADS  8
 #define RT_ROWS     8
@@ -90,6 +90,8 @@ void        handle_events(SDL_Event event);
  */
 t_bool      sphere_hit(t_entity *entity, const t_ray *r, t_precision precision, t_hit_record *hit);
 t_bool      triangle_hit(t_entity *entity, const t_ray *r, t_precision precision, t_hit_record *hit);
+t_bool      rectangle_hit(t_entity *entity, const t_ray *r, t_precision precision, t_hit_record *hit);
+t_bool      box_hit(t_entity *entity, const t_ray *r, t_precision precision, t_hit_record *hit);
 
 /**
  * CAMERA.c
@@ -104,6 +106,12 @@ t_bool      lambertian(t_material *material, const t_ray *r, const t_hit_record 
 t_bool      metal(t_material *material, const t_ray *r, const t_hit_record *h, t_vec3 *attenuation, t_ray *scattered);
 t_bool      dielectric(t_material *material, const t_ray *r, const t_hit_record *h, t_vec3 *attenuation, t_ray *scattered);
 t_bool      debug_test(t_material *material, const t_ray *r, const t_hit_record *h, t_vec3 *attenuation, t_ray *scattered);
+t_bool      emitter(t_material *material, const t_ray *r, const t_hit_record *h, t_vec3 *attenuation, t_ray *scattered);
+
+/**
+ * LIGHT.c
+ */
+t_vec3          *basic_light(struct s_material *material, const t_hit_record *hit_record, t_vec3 *p);
 
 /**
  * THREAD.c

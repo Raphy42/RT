@@ -2,6 +2,7 @@
 // Created by Raphaël Dantzer on 27/06/16.
 //
 
+#include <stdlib.h>
 #include "rt.h"
 
 static t_vec3 random_in_unit_sphere(float fuzziness)
@@ -9,14 +10,14 @@ static t_vec3 random_in_unit_sphere(float fuzziness)
     t_vec3 p;
     t_vec3 tmp;
 
-    tmp.x = (float) drand48();
-    tmp.y = (float) drand48();
-    tmp.z = (float) drand48();
+    tmp.x = (float)drand48();
+    tmp.y = (float)drand48();
+    tmp.z = (float)drand48();
     vec3_sub(&p, vec3_mul_f(&p, &tmp, 2.0f * fuzziness), &g_vec3_identity);
     while (vec3_squared_length(&p) >= 1.0) {
-        tmp.x = (float) drand48();
-        tmp.y = (float) drand48();
-        tmp.z = (float) drand48();
+        tmp.x = (float)drand48();
+        tmp.y = (float)drand48();
+        tmp.z = (float)drand48();
         vec3_sub(&p, vec3_mul_f(&p, &tmp, 2.0f * fuzziness), &g_vec3_identity);
     }
     return (p);
@@ -75,10 +76,10 @@ t_bool           lambertian(t_material *material, const t_ray *r, const t_hit_re
     t_vec3      target;
     t_vec3      random;
 
-    random = random_cosine_direction(1.0f);
+    random = random_in_unit_sphere(1.0f);
     vec3_add(&target, vec3_add(&target, &h->normal, &h->pos), &random);
     ray_assign(scattered, &h->pos, vec3_sub(&target, &target, &h->pos));
-    vec3_assign(attenuation, &material->texture.albedo);
+    material->texture.value(&material->texture, h, attenuation);
     return (TRUE);
 }
 
@@ -93,7 +94,8 @@ t_bool           metal(t_material *material, const t_ray *r, const t_hit_record 
     vec3_assign(attenuation, &material->texture.albedo);
     return (vec3_dot(&RAY_DIRECTION(scattered), &h->normal) > 0);
 }
-#define REF_IDX .7f
+
+#define REF_IDX 2.4f
 
 t_bool          dielectric(t_material *material, const t_ray *r, const t_hit_record *h, t_vec3 *attenuation, t_ray *scattered)
 {
@@ -141,4 +143,14 @@ t_bool      debug_test(t_material *material, const t_ray *r, const t_hit_record 
     ray_assign(scattered, &h->pos, vec3_sub(&target, &target, &h->pos));
     material->texture.value(&material->texture, h, attenuation);
     return (TRUE);
+}
+
+t_bool      emitter(t_material *material, const t_ray *r, const t_hit_record *h, t_vec3 *attenuation, t_ray *scattered)
+{
+    (void)material;
+    (void)r;
+    (void)h;
+    (void)attenuation;
+    (void)scattered;
+    return (FALSE);
 }

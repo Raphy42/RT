@@ -19,8 +19,22 @@ typedef struct      s_primitive_triangle
     t_vec3          v2;
 }                   t_primitive_triangle;
 
+typedef struct      s_primitive_rectangle
+{
+    t_vec3          p0;
+    t_vec3          a;
+    t_vec3          b;
+}                   t_primitive_rectangle;
 
-t_primitive_sphere  *sphere_create(float radius);
+typedef struct      s_primitive_box
+{
+    t_vec3          a;
+    t_vec3          b;
+}                   t_primitive_box;
+
+t_primitive_sphere      *sphere_create(float radius);
 t_primitive_triangle    *triangle_create(const t_vec3 *v0, const t_vec3 *v1, const t_vec3 *v2);
+t_primitive_rectangle   *rectangle_create(const t_vec3 *p0, const t_vec3 *a, const t_vec3 *b);
+t_primitive_box     *box_create(const t_vec3 *a, const t_vec3 *b);
 
 #endif //RAYTRACER_ENTITY_H

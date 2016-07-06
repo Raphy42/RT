@@ -62,10 +62,16 @@ t_vec3      *vec3_unit_vector(t_vec3 *v, const t_vec3 *src);
 
 t_vec3      *vec3_reflect(t_vec3 *v, const t_vec3 *v1, const t_vec3 *v2);
 
+t_vec3      *vec3_normalize(t_vec3 *v);
+
 /**
  * RAY.c
  */
 t_ray       *ray_assign(t_ray *r, const t_vec3 *a, const t_vec3 *b);
 t_vec3      *ray_point_at(t_vec3 *v, const t_ray *r, float t);
 
+/**
+ * UTILS.c
+ */
+float       clamp(float x, float min, float max);
 #endif //RAYTRACER_3D_MATH_H

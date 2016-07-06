@@ -124,3 +124,12 @@ t_vec3      *vec3_reflect(t_vec3 *v, const t_vec3 *v1, const t_vec3 *v2)
     vec3_mul_f(&tmp, v2, 2 * vec3_dot(v1, v2));
     return (vec3_sub(v, v1, &tmp));
 }
+
+t_vec3      *vec3_normalize(t_vec3 *v)
+{
+    float   length;
+
+    length = vec3_length(v);
+    v = vec3_div_f(v, v, length);
+    return (v);
+}

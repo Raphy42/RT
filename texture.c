@@ -2,8 +2,10 @@
 // Created by Raphaël Dantzer on 28/06/16.
 //
 
+#include <SDL_render.h>
 #include "pipeline.h"
 #include "libft/includes/libft.h"
+#include "rt.h"
 
 t_vec3   *albedo(t_texture *texture, const t_hit_record *h, t_vec3 *color)
 {
@@ -37,5 +39,24 @@ t_vec3  *rainbow(t_texture *texture, const t_hit_record *h, t_vec3 *color)
     color->x = sinf(color->x * .1f);
     color->y = sinf(color->y * .1f);
     color->z = sinf(color->z * .1f);
+    return (color);
+}
+
+t_vec3   *texture_map(t_texture *texture, const t_hit_record *h, t_vec3 *color)
+{
+    int i = (int)(h->u * (float)texture->image->w);
+    int j = (int)((1.f - h->v) * (float)texture->image->h - 0.001f);
+
+    if (j < 0)
+        j = 0;
+    if (i < 0)
+        i = 0;
+    if (i > texture->image->w - 1)
+        i = texture->image->w - 1;
+    if (j > texture->image->h - 1)
+        j = texture->image->h - 1;
+    color->x = texture->image->data[texture->image->n * i + texture->image->n * texture->image->w * j] / 255.f;
+    color->y = texture->image->data[texture->image->n * i + texture->image->n * texture->image->w * j + 1] / 255.f;
+    color->z = texture->image->data[texture->image->n * i + texture->image->n * texture->image->w * j + 2] / 255.f;
     return (color);
 }

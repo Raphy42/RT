@@ -21,30 +21,44 @@ typedef struct          s_th_render
 t_vec3 rt_color(const t_ray *r, t_scene *scene, int depth);
 
 static t_vec3 retrace(const t_ray *r, t_scene *scene, int depth, t_vec3 *attenuation) {
+    (void)attenuation;
     t_vec3 color;
-
     color = rt_color(r, scene, depth + 1);
     vec3_mul(&color, &color, attenuation);
     return (color);
 }
 
-t_vec3 rt_color(const t_ray *r, t_scene *scene, int depth) {
-    t_hit_record record;
-    t_precision precision;
-    t_vec3 tmp, attenuation;
-    t_ray sub_ray;
+static t_vec3   prepare_for_retrace(const t_ray *r, t_scene *scene, int depth, t_hit_record record)
+{
+    t_vec3      emit;
+    t_vec3      attenuation;
+    t_ray       sub_ray;
+    t_vec3      tmp;
     const t_vec3 black = {0.f, 0.f, 0.f};
+
+    ft_bzero(&emit, sizeof(t_vec3));
+    if (record.material->type == MATERIAL_EMITTER)
+        record.material->emit(record.material, &record, &emit);
+    if (depth < 50 && record.material->scatter(record.material, r, &record, &attenuation, &sub_ray))
+    {
+        tmp = retrace(&sub_ray, scene, depth, &attenuation);
+        vec3_add(&tmp, &emit, &tmp);
+        return (tmp);
+    }
+    else
+        return (emit);
+
+}
+
+t_vec3 rt_color(const t_ray *r, t_scene *scene, int depth) {
+    t_hit_record    record;
+    t_precision     precision;
+    t_vec3          tmp;
 
     precision.min = 0.001;
     precision.max = MAXFLOAT;
-    if (scene_raytrace(scene, r, precision, &record)) {
-        if (depth < 50 && record.material->scatter(record.material, r, &record, &attenuation, &sub_ray)) {
-            return (retrace(&sub_ray, scene, depth, &attenuation));
-        }
-        else
-            return (black);
-
-    }
+    if (scene_raytrace(scene, r, precision, &record))
+        return (prepare_for_retrace(r, scene, depth, record));
     else {
         t_vec3 u;
         float t;
@@ -54,7 +68,9 @@ t_vec3 rt_color(const t_ray *r, t_scene *scene, int depth) {
         vec3_unit_vector(&u, &RAY_DIRECTION(r));
         t = 0.5f * (u.y + 1.0f);
         vec3_add(&tmp, vec3_mul_f(&tmp, &g_vec3_identity, 1.0f - t), vec3_mul_f(&lerp, &gradient, t));
-        return tmp;
+//        const t_vec3 black = {0.f, 0.f, 0.f};
+//        return (black);
+        return (tmp);
     }
 }
 
@@ -65,37 +81,22 @@ void    render_fragment(t_th_render *fragment)
     int ny = WIN_Y;
     int ns = WIN_NS;
     t_vec3 color;
-    const t_vec3 lower_left_corner = {-2.0f, -1.0f, -1.0f};
-    const t_vec3 horizontal = {4.0f, 0.0f, 0.0f};
-    const t_vec3 vertical = {0.0f, 2.0f, 0.0f};
-    const t_vec3 origin = {0.0f, 0.f, 0.0f};
 
     for (int j = fragment->y_max; j >= fragment->y; j--) {
         for (int i = fragment->x; i < fragment->x_max; i++) {
             ft_bzero(&color, sizeof(t_vec3));
             for (int s = 0; s < ns; s++) {
-                float u = ((float) i + (float) drand48()) / (float) nx;
-                float v = ((float) j + (float) drand48()) / (float) ny;
-                t_vec3 v_pos;
-                vec3_mul_f(&v_pos, &vertical, v);
-
-                t_vec3 u_pos;
-                vec3_mul_f(&u_pos, &horizontal, u);
-
-                t_vec3 b;
-                vec3_add(&b, &v_pos, &u_pos);
-
-                t_vec3 tmp;
+                float u = ((float) i + (float)drand48()) / (float)nx;
+                float v = ((float) j + (float)drand48()) / (float)ny;
                 camera_get_ray(&r, fragment->scene->camera, u, v);
-//                ray_assign(&r, &origin, vec3_add(&tmp, &lower_left_corner, &b));
                 t_vec3 tmp_color = rt_color(&r, fragment->scene, 0);
                 vec3_add(&color, &color, &tmp_color);
             }
-            vec3_div_f(&color, &color, (float) ns);
+            vec3_div_f(&color, &color, (float)ns);
             t_rgb pixel;
-            pixel.r = (int) (255.99 * color.x);
-            pixel.g = (int) (255.99 * color.y);
-            pixel.b = (int) (255.99 * color.z);
+            pixel.r = (int)(255.99 * clamp(color.x, 0, 1));
+            pixel.g = (int)(255.99 * clamp(color.y, 0, 1));
+            pixel.b = (int)(255.99 * clamp(color.z, 0, 1));
             draw_pixel(WIN_X - i, WIN_Y - j, pixel, &fragment->w->canvas);
         }
     }
