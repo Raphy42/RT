@@ -1,0 +1,43 @@
+Raytracer parameters:
+
+>Window, SDL2:
+    width (x)
+    height (y)
+    rays_per_pixel (1 fast, 10 normal, 100 slow, 1000 super slow)
+    name
+    max threads ?
+
+>Scene:
+    >Primitives Type:
+        Sphere:
+            pos: t_vec3
+            radius: float
+        Triangle:
+            a: t_vec3
+            b: t_vec3
+            c: t_vec3
+        Triangulated_mesh: (.obj, .ply, etc...)
+            vertices: t_vec3 *
+            faces: int (faces index, one face is 3 vertex)
+        Rectangle:
+            p0: t_vec3
+            a: t_vec3
+            b: t_vec3
+        Box:
+            a: t_vec3
+            b: t_vec3
+    >Materials:
+        lambertian:
+            albedo: t_vec3
+            texture:
+                image: const char *filename || unsigned char *bytes
+                type: (procedural texture: checker, normal, perlin, etc...)
+                parameters: ?????? (perlin noise, texture input etc...)
+        dielectric:
+            albedo: t_vec3
+            refraction_indice: const char *indice_by_type (glass, diamond, water) || float idx > 0
+        metal:
+            albedo: t_vec3
+            fuzzyness: float 0 > x >= 1
+        debug:
+            type: (normal, wireframe, etc...)

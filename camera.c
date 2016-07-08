@@ -33,7 +33,7 @@ t_camera    *camera_init()
 {
     t_camera    *camera;
     camera = (t_camera *)ft_memalloc(sizeof(t_camera));
-    const t_vec3 eye = {5, 5, 0};
+    const t_vec3 eye = {20, 20, 20};
     const t_vec3 center = {0, 0, 0};
     const t_vec3 p_up = {0, 1, 0};
     camera->aspect = (float)(WIN_X) / (float)(WIN_Y);

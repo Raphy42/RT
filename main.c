@@ -27,7 +27,7 @@ int main() {
                           {0,     0,      -1.5f},
                           {-1.5f, 0,      0},
                           {1.5f,  0,      0},
-                          {0,     0.5,    3},
+                          {2,     2,    3},
                           {0,     0.5f,   -3.f},
                           {-3.f,  0.5f,   0},
                           {3.f,   0.5,    0},
@@ -39,37 +39,39 @@ int main() {
     };
 
     const t_vec3 rectangle[] = {
-            {-5, 0, -5},
-            {10, 0, 0},
-            {0, 0, 10}
+            {-50, 0, -50},
+            {100, 0, 0},
+            {0, 0, 100}
     };
 
     const t_vec3 box_bound[] = {
-            {2, 2, 2},
-            {3, 3, 3}
+            {-10, -10, -10},
+            {10, 10, 10}
     };
 
-    t_vec3 light = {10.0, 10.0, 10.0};
+    t_vec3 light_v = {10.0, 10.0, 10.0};
 
     t_material *checkboard = material_create(MATERIAL_DEBUG, &albedo[3]);
     checkboard->texture.value = &checker;
 
+    t_material *light = material_create(MATERIAL_EMITTER, &light_v);
+
     t_material  *image_test = material_create(MATERIAL_LAMBERTIAN, &albedo[3]);
     image_test->texture.image = (t_image *)ft_memalloc(sizeof(t_image));
-    image_test->texture.image->data = stbi_load("grmy.PNG", &image_test->texture.image->w, &image_test->texture.image->h, &image_test->texture.image->n, 0);
+    image_test->texture.image->data = stbi_load("aastruc.jpg", &image_test->texture.image->w, &image_test->texture.image->h, &image_test->texture.image->n, 0);
     image_test->texture.value = texture_map;
 
-    scene.entities[9] = entity_create(PRIMITIVE_AXIS_ALIGNED_BOX, checkboard, NULL, box_create(&box_bound[0], &box_bound[1]));
+    scene.entities[0] = entity_create(PRIMITIVE_AXIS_ALIGNED_BOX, checkboard, NULL, box_create(&box_bound[0], &box_bound[1]));
     scene.entities[10] = entity_create(PRIMITIVE_SPHERE, material_create(MATERIAL_METAL, &albedo[3]), &pos[0], sphere_create(1));
-    scene.entities[1] = entity_create(PRIMITIVE_SPHERE, material_create(MATERIAL_METAL, &albedo[3]), &pos[1], sphere_create(1));
+    scene.entities[1] = entity_create(PRIMITIVE_SPHERE, material_create(MATERIAL_LAMBERTIAN, &albedo[3]), &pos[1], sphere_create(15));
     scene.entities[2] = entity_create(PRIMITIVE_SPHERE, material_create(MATERIAL_LAMBERTIAN, &albedo[3]), &pos[2], sphere_create(1));
     scene.entities[3] = entity_create(PRIMITIVE_SPHERE, material_create(MATERIAL_LAMBERTIAN, &albedo[3]), &pos[3], sphere_create(1));
-    scene.entities[4] = entity_create(PRIMITIVE_SPHERE, material_create(MATERIAL_METAL, &albedo[1]), &pos[4], sphere_create(1.5f));
+    scene.entities[4] = entity_create(PRIMITIVE_SPHERE, light, &pos[4], sphere_create(0.5f));
     scene.entities[5] = entity_create(PRIMITIVE_SPHERE, material_create(MATERIAL_LAMBERTIAN, &albedo[2]), &pos[5], sphere_create(1.5f));
     scene.entities[6] = entity_create(PRIMITIVE_SPHERE, material_create(MATERIAL_LAMBERTIAN, &albedo[3]), &pos[6], sphere_create(1.5f));
     scene.entities[7] = entity_create(PRIMITIVE_SPHERE, material_create(MATERIAL_DIELECTRIC, &albedo[0]), &pos[7], sphere_create(1.5f));
     scene.entities[8] = entity_create(PRIMITIVE_SPHERE, checkboard, &pos[8], sphere_create(100.f));
-    scene.entities[0] = entity_create(PRIMITIVE_RECTANGLE, image_test, &pos[10], rectangle_create(&rectangle[0], &rectangle[1], &rectangle[2]));
+    scene.entities[9] = entity_create(PRIMITIVE_RECTANGLE, image_test, &pos[10], rectangle_create(&rectangle[0], &rectangle[1], &rectangle[2]));
 
     init(&w);
     //PPM HEADER
