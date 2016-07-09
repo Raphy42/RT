@@ -13,65 +13,35 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 
+static void vec3_create(t_vec3 *v, float x, float y, float z)
+{
+    v->x = x;
+    v->y = y;
+    v->z = z;
+}
+
 int main() {
     t_window w;
     t_scene scene;
 
-    t_vec3 albedo[] = {{.8f, .3f, .3f},
-                       {.4f, .4f, .4f},
-                       {.8f, .6f, .2f},
-                       {1.f, 1.f, 1.f}};
-    scene_init(&scene, 11);
+    scene_init(&scene, 1000);
     scene.camera = camera_init();
-    const t_vec3 pos[] = {{0,     0,      1.5},
-                          {0,     0,      -1.5f},
-                          {-1.5f, 0,      0},
-                          {1.5f,  0,      0},
-                          {2,     2,    3},
-                          {0,     0.5f,   -3.f},
-                          {-3.f,  0.5f,   0},
-                          {3.f,   0.5,    0},
-                          {0.f,   -105.f, 0.f},
-                          {1.f,   1.f,    1.f},
-                          {4,     4,      0},
-                          {12, -12, 0},
-                          {-12, -12, 0}
-    };
 
-    const t_vec3 rectangle[] = {
-            {-50, 0, -50},
-            {100, 0, 0},
-            {0, 0, 100}
-    };
-
-    const t_vec3 box_bound[] = {
-            {-10, -10, -10},
-            {10, 10, 10}
-    };
-
-    t_vec3 light_v = {10.0, 10.0, 10.0};
-
-    t_material *checkboard = material_create(MATERIAL_DEBUG, &albedo[3]);
-    checkboard->texture.value = &checker;
-
-    t_material *light = material_create(MATERIAL_EMITTER, &light_v);
-
-    t_material  *image_test = material_create(MATERIAL_LAMBERTIAN, &albedo[3]);
-    image_test->texture.image = (t_image *)ft_memalloc(sizeof(t_image));
-    image_test->texture.image->data = stbi_load("aastruc.jpg", &image_test->texture.image->w, &image_test->texture.image->h, &image_test->texture.image->n, 0);
-    image_test->texture.value = texture_map;
-
-    scene.entities[0] = entity_create(PRIMITIVE_AXIS_ALIGNED_BOX, checkboard, NULL, box_create(&box_bound[0], &box_bound[1]));
-    scene.entities[10] = entity_create(PRIMITIVE_SPHERE, material_create(MATERIAL_METAL, &albedo[3]), &pos[0], sphere_create(1));
-    scene.entities[1] = entity_create(PRIMITIVE_SPHERE, material_create(MATERIAL_LAMBERTIAN, &albedo[3]), &pos[1], sphere_create(15));
-    scene.entities[2] = entity_create(PRIMITIVE_SPHERE, material_create(MATERIAL_LAMBERTIAN, &albedo[3]), &pos[2], sphere_create(1));
-    scene.entities[3] = entity_create(PRIMITIVE_SPHERE, material_create(MATERIAL_LAMBERTIAN, &albedo[3]), &pos[3], sphere_create(1));
-    scene.entities[4] = entity_create(PRIMITIVE_SPHERE, light, &pos[4], sphere_create(0.5f));
-    scene.entities[5] = entity_create(PRIMITIVE_SPHERE, material_create(MATERIAL_LAMBERTIAN, &albedo[2]), &pos[5], sphere_create(1.5f));
-    scene.entities[6] = entity_create(PRIMITIVE_SPHERE, material_create(MATERIAL_LAMBERTIAN, &albedo[3]), &pos[6], sphere_create(1.5f));
-    scene.entities[7] = entity_create(PRIMITIVE_SPHERE, material_create(MATERIAL_DIELECTRIC, &albedo[0]), &pos[7], sphere_create(1.5f));
-    scene.entities[8] = entity_create(PRIMITIVE_SPHERE, checkboard, &pos[8], sphere_create(100.f));
-    scene.entities[9] = entity_create(PRIMITIVE_RECTANGLE, image_test, &pos[10], rectangle_create(&rectangle[0], &rectangle[1], &rectangle[2]));
+    int i = -1;
+    for (int z = 0; z < 10; z++)
+    for (int x = 0; x < 10; x++)
+    {
+        for (int y = 0; y < 10; y++)
+        {
+            t_vec3 a, b, color;
+            color.x = sinf((float)x / 10.f);
+            color.y = sinf((float)y / 10.f);
+            color.z = sinf((float)z / 10.f);
+            vec3_create(&a, x, y, z);
+            vec3_create(&b, x + 0.5f, y + 0.5f, z + 0.5f);
+            scene.entities[++i] = entity_create(PRIMITIVE_AXIS_ALIGNED_BOX, material_create(MATERIAL_LAMBERTIAN, &color), NULL, box_create(&a, &b));
+        }
+    }
 
     init(&w);
     //PPM HEADER

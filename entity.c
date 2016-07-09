@@ -42,8 +42,16 @@ t_primitive_box     *box_create(const t_vec3 *a, const t_vec3 *b)
     t_primitive_box *box;
 
     box = (t_primitive_box *)ft_memalloc(sizeof(t_primitive_box));
-    vec3_assign(&box->a, a);
-    vec3_assign(&box->b, b);
+    if (a->x < b->x && a->y < b->y && a->z < b->z)
+    {
+        vec3_assign(&box->a, a);
+        vec3_assign(&box->b, b);
+    }
+    else
+    {
+        vec3_assign(&box->a, b);
+        vec3_assign(&box->b, a);
+    }
     return (box);
 }
 
@@ -87,7 +95,7 @@ t_material      *material_create(t_material_type type, t_vec3 *albedo_t)
         material->scatter = &dielectric;
     else if (material->type == MATERIAL_DEBUG)
     {
-        material->scatter = &debug_test;
+        material->scatter = &lambertian;
         material->texture.value = &checker;
     }
     else if (material->type == MATERIAL_EMITTER)
