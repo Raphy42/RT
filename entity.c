@@ -96,7 +96,7 @@ t_material      *material_create(t_material_type type, t_vec3 *albedo_t)
     else if (material->type == MATERIAL_DEBUG)
     {
         material->scatter = &lambertian;
-        material->texture.value = &checker;
+        material->texture.value = &debug;
     }
     else if (material->type == MATERIAL_EMITTER)
     {

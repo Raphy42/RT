@@ -9,6 +9,8 @@
 
 typedef struct      s_primitive_sphere
 {
+    //TODO add pos to sphere
+    t_vec3          pos;
     float           radius;
 }                   t_primitive_sphere;
 

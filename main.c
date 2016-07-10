@@ -12,6 +12,7 @@
 #include "entity.h"
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
+#include "octree.h"
 
 static void vec3_create(t_vec3 *v, float x, float y, float z)
 {
@@ -23,9 +24,15 @@ static void vec3_create(t_vec3 *v, float x, float y, float z)
 int main() {
     t_window w;
     t_scene scene;
+    t_octree *o;
 
     scene_init(&scene, 1000);
     scene.camera = camera_init();
+
+    const t_vec3 origin = {0, 0, 0};
+    const t_vec3 half_dimension = {10, 10, 10};
+
+    o = octree_create(&origin, &half_dimension);
 
     int i = -1;
     for (int z = 0; z < 10; z++)
@@ -34,15 +41,19 @@ int main() {
         for (int y = 0; y < 10; y++)
         {
             t_vec3 a, b, color;
+            t_octree_data *data = (t_octree_data *)ft_memalloc(sizeof(t_octree_data));
             color.x = sinf((float)x / 10.f);
             color.y = sinf((float)y / 10.f);
             color.z = sinf((float)z / 10.f);
             vec3_create(&a, x, y, z);
             vec3_create(&b, x + 0.5f, y + 0.5f, z + 0.5f);
-            scene.entities[++i] = entity_create(PRIMITIVE_AXIS_ALIGNED_BOX, material_create(MATERIAL_LAMBERTIAN, &color), NULL, box_create(&a, &b));
+            scene.entities[++i] = entity_create(PRIMITIVE_AXIS_ALIGNED_BOX, material_create(MATERIAL_DEBUG, &color), NULL, box_create(&a, &b));
+            vec3_assign(&data->pos, &a);
+            octree_insert(o, data);
         }
     }
 
+    octree_destroy(o);
     init(&w);
     //PPM HEADER
     while (SDL_PollEvent(&w.event))

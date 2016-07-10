@@ -95,7 +95,7 @@ t_bool           metal(t_material *material, const t_ray *r, const t_hit_record 
     return (vec3_dot(&RAY_DIRECTION(scattered), &h->normal) > 0);
 }
 
-#define REF_IDX 2.4f
+#define REF_IDX 1.33f
 
 t_bool          dielectric(t_material *material, const t_ray *r, const t_hit_record *h, t_vec3 *attenuation, t_ray *scattered)
 {
