@@ -34,7 +34,6 @@ static t_vec3   prepare_for_retrace(const t_ray *r, t_scene *scene, int depth, t
     t_vec3      attenuation;
     t_ray       sub_ray;
     t_vec3      tmp;
-    const t_vec3 black = {0.f, 0.f, 0.f};
 
     ft_bzero(&emit, sizeof(t_vec3));
     if (record.material->type == MATERIAL_EMITTER)
@@ -68,8 +67,8 @@ t_vec3 rt_color(const t_ray *r, t_scene *scene, int depth) {
         vec3_unit_vector(&u, &RAY_DIRECTION(r));
         t = 0.5f * (u.y + 1.0f);
         vec3_add(&tmp, vec3_mul_f(&tmp, &g_vec3_identity, 1.0f - t), vec3_mul_f(&lerp, &gradient, t));
-        const t_vec3 black = {0.f, 0.f, 0.f};
-        return (black);
+//        const t_vec3 black = {0.f, 0.f, 0.f};
+//        return (black);
         return (tmp);
     }
 }
