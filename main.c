@@ -30,28 +30,36 @@ int main() {
     scene.camera = camera_init();
 
     const t_vec3 origin = {0, 0, 0};
-    const t_vec3 half_dimension = {10, 10, 10};
+    const t_vec3 half_dimension = {1, 2, 2};
 
     o = octree_create(&origin, &half_dimension);
 
     int i = -1;
     for (int z = 0; z < 10; z++)
-    for (int x = 0; x < 10; x++)
-    {
-        for (int y = 0; y < 10; y++)
-        {
+    for (int x = 0; x < 10; x++) {
+        for (int y = 0; y < 10; y++) {
             t_vec3 a, b, color;
-            t_octree_data *data = (t_octree_data *)ft_memalloc(sizeof(t_octree_data));
-            color.x = sinf((float)x / 10.f);
-            color.y = sinf((float)y / 10.f);
-            color.z = sinf((float)z / 10.f);
+            t_octree_data *data = (t_octree_data *) ft_memalloc(sizeof(t_octree_data));
+            color.x = sinf((float) x / 10.f);
+            color.y = sinf((float) y / 10.f);
+            color.z = sinf((float) z / 10.f);
             vec3_create(&a, x, y, z);
             vec3_create(&b, x + 0.5f, y + 0.5f, z + 0.5f);
-            scene.entities[++i] = entity_create(PRIMITIVE_AXIS_ALIGNED_BOX, material_create(MATERIAL_DEBUG, &color), NULL, box_create(&a, &b));
+            if (y % 2 && x % 2 && z % 2)
+            {
+                scene.entities[++i] = entity_create(PRIMITIVE_SPHERE, material_create(MATERIAL_EMITTER, &color), &a,
+                                                    sphere_create(0.5f));
+                vec3_assign(&scene.entities[i]->material->texture.emit_color, &color);
+            }
+            else
+                scene.entities[++i] = entity_create(PRIMITIVE_AXIS_ALIGNED_BOX,
+                                                    material_create(MATERIAL_METAL, &color), NULL,
+                                                    box_create(&a, &b));
             vec3_assign(&data->pos, &a);
-            octree_insert(o, data);
+//            octree_insert(o, data);
         }
     }
+
 
     octree_destroy(o);
     init(&w);
