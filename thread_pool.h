@@ -59,29 +59,27 @@ struct      s_thread_pool
 /**
  * SEMAPHORE.c
  */
-void    semaphore_wait(t_semaphore *semaphore);
-void    semaphore_post_all(t_semaphore *semaphore);
-void    semaphore_post(t_semaphore *semaphore);
-void    semaphore_reset(t_semaphore *semaphore);
-void    semaphore_init(t_semaphore *semaphore, int value);
+void                semaphore_wait(t_semaphore *semaphore);
+void                semaphore_post_all(t_semaphore *semaphore);
+void                semaphore_post(t_semaphore *semaphore);
+void                semaphore_reset(t_semaphore *semaphore);
+void                semaphore_init(t_semaphore *semaphore, int value);
 
 /**
  * JOB.c
  */
-void            job_queue_destroy(t_thread_pool *thread_pool);
-int             job_queue_init(t_thread_pool *thread_pool);
-t_job           *job_queue_pull(t_thread_pool *thread_pool);
-void           job_queue_push(t_thread_pool *thread_pool, t_job *job);
+void                job_queue_destroy(t_thread_pool *thread_pool);
+int                 job_queue_init(t_thread_pool *thread_pool);
+t_job               *job_queue_pull(t_thread_pool *thread_pool);
+void                job_queue_push(t_thread_pool *thread_pool, t_job *job);
 
 /**
  * THREAD_POOL.c
  */
 t_thread_pool       *thread_pool_init(int num_threads);
 int                 thread_pool_add_work(t_thread_pool *thread_pool, void *(*f)(void *), void *data);
-void            thread_pool_resume(t_thread_pool *thread_pool);
-void            thread_pool_pause(t_thread_pool *thread_pool);
+void                thread_pool_resume(t_thread_pool *thread_pool);
+void                thread_pool_pause(t_thread_pool *thread_pool);
 void                thread_pool_destroy(t_thread_pool *thread_pool);
-
-
 
 #endif //RAYTRACER_THREAD_POOL_H

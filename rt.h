@@ -8,9 +8,9 @@
 #include "m3d.h"
 #include "pipeline.h"
 
-#define WIN_X       1800
-#define WIN_Y       900
-#define WIN_NS      100
+#define WIN_X       800
+#define WIN_Y       400
+#define WIN_NS      10
 #define RT_THREADS  8
 #define RT_ROWS     8
 
