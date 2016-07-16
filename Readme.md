@@ -12,6 +12,7 @@ Implemented:
 1. Materials: _Lambertian (matte), Metal, Dielectric (glass, water etc...)_
 2. Primitives: _sphere, rectangle, axis-aligned box, triangle_
 3. Textures: _checker, normal debug, bitmap texture_
+4. Utilities: _thread pool (inspired from pithikos/c-thread-pool) _
 
 Todo:
 =====
