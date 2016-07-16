@@ -154,3 +154,15 @@ t_bool      emitter(t_material *material, const t_ray *r, const t_hit_record *h,
     (void)scattered;
     return (FALSE);
 }
+
+//t_bool      cook_torrance(t_material *material, const t_ray *r, const t_hit_record *h, t_vec3 *attenuation, t_ray *scattered)
+//{
+//    float roughness= 0.3f;
+//    float F0 = 0.8f;
+//    float k = 0.2f;
+//    const t_vec3 light_color = {0.9, 0.1, 0.1};
+//    t_vec3 normal;
+//    vec3_assign(&normal, &h->normal);
+//    vec3_normalize(&normal);
+//    float NdotL =
+//}

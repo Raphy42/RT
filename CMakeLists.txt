@@ -21,7 +21,7 @@ set(SOURCE_FILES camera.c
         utils.c
         vec3.c
         aabb.c
-        )
+        thread_pool.c thread_pool.h job.c semaphore.c)
 
 add_library(sdl2 STATIC IMPORTED)
 set_target_properties(sdl2 PROPERTIES IMPORTED_LOCATION /usr/local/lib/libSDL2.a)

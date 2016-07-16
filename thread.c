@@ -6,7 +6,9 @@
 #include "rt.h"
 #include "scene.h"
 #include "libft/includes/libft.h"
-#include "thread.h"
+#include "thread_pool.h"
+
+extern int g_can_render;
 
 typedef struct          s_th_render
 {
@@ -101,13 +103,45 @@ void    render_fragment(t_th_render *fragment)
     }
 }
 
-void    *threaderize_render(void *th)
+void    threaderize_render(void *th)
 {
     t_th_render *fragment;
 
     fragment = (t_th_render *)th;
     render_fragment(fragment);
-    return (NULL);
+}
+
+/**
+ * TODO move thread_pool in the scene
+ */
+#define RT_TILE_X 8
+#define RT_TILE_Y 4
+void    thread_pool_render(t_scene *scene, t_window *w, int width, int height)
+{
+    t_thread_pool       *pool;
+    const int step_x = width / RT_TILE_X;
+    const int step_y = height / RT_TILE_Y;
+    int n = 0;
+
+    pool = thread_pool_init(8);
+    t_th_render         **th;
+    th = (t_th_render **)ft_memalloc(sizeof(t_th_render *) * RT_TILE_X * RT_TILE_Y);
+    for (int i = 0; i < RT_TILE_X; i++)
+    {
+        for (int j = 0; j < RT_TILE_Y; j++)
+        {
+            th[n] = (t_th_render *)ft_memalloc(sizeof(t_th_render));
+            th[n]->scene = scene;
+            th[n]->x = step_x * i;
+            th[n]->x_max = step_x * (i + 1);
+            th[n]->y = step_y * j;
+            th[n]->y_max = step_y * (j + 1);
+            th[n]->w = w;
+            thread_pool_add_work(pool, (void *)threaderize_render, th[n]);
+            n++;
+        }
+    }
+    (void)w;
 }
 
 void    threaded_render(t_scene *scene, t_window *w, int width, int height)
@@ -131,7 +165,7 @@ void    threaded_render(t_scene *scene, t_window *w, int width, int height)
             th[j].y = j * step_y;
             th[j].y_max = (j + 1) * step_y;
             th[j].w = w;
-            pthread_create(&tid[j], NULL, threaderize_render, &th[j]);
+            pthread_create(&tid[j], NULL, (void *)threaderize_render, &th[j]);
         }
         j = -1;
         while (++j < RT_THREADS)

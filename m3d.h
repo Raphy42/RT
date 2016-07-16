@@ -63,6 +63,8 @@ t_vec3      *vec3_unit_vector(t_vec3 *v, const t_vec3 *src);
 t_vec3      *vec3_reflect(t_vec3 *v, const t_vec3 *v1, const t_vec3 *v2);
 
 t_vec3      *vec3_normalize(t_vec3 *v);
+t_vec3      *vec3_max(t_vec3 *v, const t_vec3 *v1, const t_vec3 *v2);
+t_vec3      *vec3_min(t_vec3 *v, const t_vec3 *v1, const t_vec3 *v2);
 
 /**
  * RAY.c

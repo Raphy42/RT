@@ -133,3 +133,22 @@ t_vec3      *vec3_normalize(t_vec3 *v)
     v = vec3_div_f(v, v, length);
     return (v);
 }
+
+/**
+ * GLSL function implementation
+ */
+t_vec3      *vec3_max(t_vec3 *v, const t_vec3 *v1, const t_vec3 *v2)
+{
+    v->x = fmaxf(v1->x, v2->x);
+    v->y = fmaxf(v1->y, v2->y);
+    v->z = fmaxf(v1->z, v2->z);
+    return (v);
+}
+
+t_vec3      *vec3_min(t_vec3 *v, const t_vec3 *v1, const t_vec3 *v2)
+{
+    v->x = fminf(v1->x, v2->x);
+    v->y = fminf(v1->y, v2->y);
+    v->z = fminf(v1->z, v2->z);
+    return (v);
+}

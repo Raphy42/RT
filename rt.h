@@ -8,9 +8,9 @@
 #include "m3d.h"
 #include "pipeline.h"
 
-#define WIN_X       1200
-#define WIN_Y       600
-#define WIN_NS      1
+#define WIN_X       1800
+#define WIN_Y       900
+#define WIN_NS      100
 #define RT_THREADS  8
 #define RT_ROWS     8
 
@@ -117,5 +117,6 @@ t_vec3          *basic_light(struct s_material *material, const t_hit_record *hi
  * THREAD.c
  */
 void    threaded_render(t_scene *scene, t_window *w, int width, int height);
+void    thread_pool_render(t_scene *scene, t_window *w, int width, int height);
 
 #endif //RAYTRACER_RT_H
