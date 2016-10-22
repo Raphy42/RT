@@ -10,9 +10,11 @@
 
 #define WIN_X       800
 #define WIN_Y       400
-#define WIN_NS      10
+#define WIN_NS      500
 #define RT_THREADS  8
 #define RT_ROWS     8
+#define RT_TILE_X   32
+#define RT_TILE_Y   32
 
 #ifndef TRUE
 # define TRUE 1
@@ -68,6 +70,7 @@ typedef struct      s_scene
     t_entity        **entities;
     int             entity_count;
     t_camera        *camera;
+    t_vec3          light_pos;
 }                   t_scene;
 /**
  * INIT.c

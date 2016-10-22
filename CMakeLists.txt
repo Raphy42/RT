@@ -17,7 +17,7 @@ set(SOURCE_FILES camera.c
         safe_alloc.c
         scene.c
         texture.c
-        thread.c
+        render.c
         utils.c
         vec3.c
         aabb.c

@@ -14,64 +14,53 @@
 #include "stb_image.h"
 
 #define WHITE (t_vec3 *)&g_vec3_identity
+void sighandler(int signal)
+{
+    (void)signal;
+    exit(EXIT_FAILURE);
+}
 
 int main() {
+    signal(SIGINT, &sighandler);
     t_window w;
     t_scene scene;
 
-    scene_init(&scene, 9);
+    scene_init(&scene, 1004);
     scene.camera = camera_init();
-    init(&w);
-
     const t_vec3 pos[] = {
-            {.6, .6, .6},
-            {0, 1, 0}
+            {0, -5, 10},
+            {0, -5, 10},
+            {10, -5, 0},
+            {10, -5, 10}
     };
 
-    const t_vec3 rect[] = {
-            {-2, 0, -2},
-            {4, 0, 0},
-            {0, 0, 4},
-            {0, 4, 0},
-            {2, 0, 2},
-            {0, 0, -4},
-            {-4, 0, 0},
-            {2, 4, 2},
-            {-4, 0, 0},
-            {0, 0, -4},
-            {-1.5f, 3.99, -1.5f},
-            {3, 0, 0},
-            {0, 0, 3}
-    };
-
-    const t_vec3 box[] = {
-            {-1, 0, -1},
-            {0, 1, 0}
-    };
-
-    t_vec3 albedo[] = {
-            {0, 1, 0},
-            {1, 0, 0}
-    };
-
-    t_vec3 light[] = {
-            {1, 1, 1}
-    };
-
-#define RED &albedo[0]
-#define GREEN &albedo[1]
-
-    scene.entities[8] = entity_create(PRIMITIVE_RECTANGLE, material_create(MATERIAL_EMITTER, &light[0]), NULL, rectangle_create(&rect[10], &rect[12], &rect[11]));
-    vec3_assign(&scene.entities[8]->material->texture.emit_color, &light[0]);
-    scene.entities[7] = entity_create(PRIMITIVE_AXIS_ALIGNED_BOX, material_create(MATERIAL_LAMBERTIAN, WHITE), NULL, box_create(&box[0], &box[1]));
-    scene.entities[6] = entity_create(PRIMITIVE_SPHERE, material_create(MATERIAL_METAL, WHITE), &pos[0], sphere_create(.3f));
-    scene.entities[5] = entity_create(PRIMITIVE_RECTANGLE, material_create(MATERIAL_LAMBERTIAN, WHITE), NULL, rectangle_create(&rect[7], &rect[8], &rect[9]));
-    scene.entities[4] = entity_create(PRIMITIVE_RECTANGLE, material_create(MATERIAL_LAMBERTIAN, WHITE), NULL, rectangle_create(&rect[4], &rect[6], &rect[3]));
-    scene.entities[3] = entity_create(PRIMITIVE_RECTANGLE, material_create(MATERIAL_LAMBERTIAN, GREEN), NULL, rectangle_create(&rect[4], &rect[3], &rect[5]));
-    scene.entities[2] = entity_create(PRIMITIVE_RECTANGLE, material_create(MATERIAL_LAMBERTIAN, WHITE), NULL, rectangle_create(&rect[0], &rect[1], &rect[3]));
-    scene.entities[1] = entity_create(PRIMITIVE_RECTANGLE, material_create(MATERIAL_LAMBERTIAN, RED), NULL, rectangle_create(&rect[0], &rect[3], &rect[2]));
-    scene.entities[0] = entity_create(PRIMITIVE_RECTANGLE, material_create(MATERIAL_LAMBERTIAN, WHITE), NULL, rectangle_create(&rect[0], &rect[2], &rect[1]));
-
+    int i = -1;
+    for (int z = 0; z < 10; z++)
+        for (int x = 0; x < 10; x++) {
+            for (int y = 0; y < 10; y++) {
+                t_vec3 a, b, color;
+                color.x = sinf((float) x / 10.f);
+                color.y = sinf((float) y / 10.f);
+                color.z = sinf((float) z / 10.f);
+                a.x =x; a.y = y; a.z = z;
+                b.x = x + 0.5f;b.y =  y + 0.5f;b.z = z + 0.5f;
+                if (y % 2 && x % 2 && z % 2) {
+                    scene.entities[++i] = entity_create(PRIMITIVE_SPHERE, material_create(MATERIAL_METAL, (t_vec3 *)&g_vec3_identity), &a,
+                                                        sphere_create(0.5f));
+                }
+                else
+                {
+                    scene.entities[++i] = entity_create(PRIMITIVE_AXIS_ALIGNED_BOX,
+                                                        material_create(MATERIAL_LAMBERTIAN, &color), NULL,
+                                                        box_create(&a, &b));
+                }
+            }
+        }
+    scene.entities[1000] = entity_create(PRIMITIVE_SPHERE, material_create(MATERIAL_METAL, (t_vec3 *)&g_vec3_identity), &pos[0], sphere_create(7.f));
+    scene.entities[1001] = entity_create(PRIMITIVE_SPHERE, material_create(MATERIAL_METAL, (t_vec3 *)&g_vec3_identity), &pos[1], sphere_create(7.f));
+    scene.entities[1002] = entity_create(PRIMITIVE_SPHERE, material_create(MATERIAL_METAL, (t_vec3 *)&g_vec3_identity), &pos[2], sphere_create(7.f));
+    scene.entities[1003] = entity_create(PRIMITIVE_SPHERE, material_create(MATERIAL_METAL, (t_vec3 *)&g_vec3_identity), &pos[3], sphere_create(7.f));
+    init(&w);
     //PPM HEADER
     while (SDL_PollEvent(&w.event))
         handle_events(w.event);
@@ -79,8 +68,9 @@ int main() {
     while (1) {
         while (SDL_PollEvent(&w.event))
             handle_events(w.event);
-        usleep(250);
+        sleep(1);
         render(&w);
     }
     return (0);
 }
+
